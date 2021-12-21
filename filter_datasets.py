@@ -5,6 +5,7 @@ from Bio import Entrez
 import re
 import ftplib
 import ppx
+import datetime
 
 '''
 from bs4 import BeautifulSoup
@@ -16,6 +17,9 @@ for dl in info:
 
 #Get a list of all datasets
 def getAllDts(base_url = "massive.ucsd.edu/"):
+    """
+    Search on all datasets from massIVE
+    """
     datasets_url = 'https://' + base_url + '/ProteoSAFe/datasets_json.jsp'
     json_obj = json.loads(requests.get(datasets_url).text)
     return json_obj["datasets"]
@@ -120,3 +124,17 @@ def findmztab(identifier):
     if len(mztab):
         return {identifier: mztab}
 
+def get_mztabs(pride_dataset:dict) -> dict:
+    #Função para baixar e abrir todos os arquivos mztabe de um projeto
+    project_dict_map = {}
+    for projects,values in pride_dataset.items():
+        try:
+            mztabs_from_projects = findmztab(projects)
+            if mztabs_from_projects != None:
+                project_dict_map[projects] = mztabs_from_projects[projects]
+        except:
+            print(f"ERROR:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M')} - {projects} \n")
+    return project_dict_map
+def pride_summary():
+    #Organiza os dados do pride
+    pass
